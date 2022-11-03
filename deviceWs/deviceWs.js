@@ -4,7 +4,7 @@
  * @Autor: solid
  * @Date: 2022-08-18 14:43:38
  * @LastEditors: solid
- * @LastEditTime: 2022-11-01 16:43:49
+ * @LastEditTime: 2022-11-01 18:47:15
  */
 const WebSocket = require('ws');
 let deviceWSClientSet = require('../clients/device_clients.js');
@@ -24,7 +24,7 @@ module.exports = function () {
             room = name
         }
         deviceWSClientSet.add(room, name, ws);
-        console.log("用户进入:" + name);
+        console.log("Shell界面=>用户进入:" + name);
         if (name != room) {
             deviceWSClientSet.addNote(room, req.socket.remoteAddress);
         }
@@ -50,7 +50,7 @@ module.exports = function () {
 
         //退出
         ws.on('close', () => {
-            console.log(name + "离开");
+            console.log("Shell界面=>" + name + "离开");
             if (deviceWSClientSet.client_map.hasOwnProperty(room)) {
                 deviceWSClientSet.remove(room, name);
                 if (name == room) {
