@@ -4,7 +4,7 @@
  * @Autor: solid
  * @Date: 2022-10-31 14:06:37
  * @LastEditors: solid
- * @LastEditTime: 2022-11-03 13:55:11
+ * @LastEditTime: 2022-11-03 14:16:28
  */
 const WebSocket = require('ws');
 const pty = require('node-pty');
@@ -65,7 +65,6 @@ var connect = function () {
 };
 var connect2 = function () {
     let flag = false
-    // ws = new WebSocket("ws://101.34.204.112:7880/ws?room="+room+"_target");
     screenWs = new WebSocket("ws://192.168.6.17:7880/screen?room=" + room + "_target");
     screenWs.on('open', function () {
         clearInterval(screentimer)
