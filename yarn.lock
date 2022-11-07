@@ -613,6 +613,11 @@ dir-glob@^3.0.1:
   dependencies:
     path-type "^4.0.0"
 
+diskinfo@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.npmmirror.com/diskinfo/-/diskinfo-0.0.3.tgz#0d41030f09d33b5c975910bc9ab2fd4d98f62bf0"
+  integrity sha512-uZoeIGLsRWBWX+P1K14R/JDvCpo4kdUd6p2jVh09dzsNog005gSYLF6GXjSqPKo6Tl9qsw2f6auy8UUcC2y6yg==
+
 download@^8.0.0:
   version "8.0.0"
   resolved "https://registry.npmmirror.com/download/-/download-8.0.0.tgz#afc0b309730811731aae9f5371c9f46be73e51b1"
