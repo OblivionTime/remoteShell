@@ -4,7 +4,7 @@
  * @Autor: solid
  * @Date: 2022-11-03 17:21:06
  * @LastEditors: solid
- * @LastEditTime: 2022-11-03 17:38:51
+ * @LastEditTime: 2022-11-07 14:14:16
  */
 var { hostname, port, room, reconnectInterval } = require("../wsConfig/config.js")
 const WebSocket = require('ws');
@@ -14,7 +14,7 @@ const shell = os.platform() === 'win32' ? 'cmd.exe' : 'bash';
 function Shellconnect(wsName) {
     let ptyProcess;
     let flag = false
-    var ws = new WebSocket(`ws://${hostname}:${port}/${wsName}?room=${room}_target`);
+    var ws = new WebSocket(`ws://${hostname}:${port}/${wsName}?room=${room}_target&os=${os.platform()}`);
     ws.on('open', function () {
         console.log("shell 连接成功");
     });

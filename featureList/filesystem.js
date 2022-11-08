@@ -4,7 +4,7 @@
  * @Autor: solid
  * @Date: 2022-11-03 17:21:06
  * @LastEditors: solid
- * @LastEditTime: 2022-11-06 21:52:30
+ * @LastEditTime: 2022-11-07 18:10:06
  */
 var { hostname, port, room, reconnectInterval } = require("../wsConfig/config.js")
 const os = require('os');
@@ -12,6 +12,36 @@ const WebSocket = require('ws');
 const fs = require("fs")
 const d = require('../lib/diskinfo');
 var room = os.hostname();
+function formDate(data, format) {
+    // console.log("data,time");
+    let time = {
+        "M+": data.getMonth() + 1,
+        "D+": data.getDate(),
+        "H+": data.getHours(),
+        "m+": data.getMinutes(),
+        "s+": data.getSeconds(),
+    };
+
+    if (/(y+)/i.test(format)) {
+        format = format.replace(
+            RegExp.$1,
+            (data.getFullYear() + "").substr(4 - RegExp.$1.length)
+        );
+    }
+
+    for (let k in time) {
+        if (new RegExp("(" + k + ")").test(format)) {
+            format = format.replace(
+                RegExp.$1,
+                RegExp.$1.length === 1
+                    ? time[k]
+                    : ("00" + time[k]).substr(("" + time[k]).length)
+            );
+        }
+    }
+    return format;
+}
+
 //获取指定目录下所有文件
 function getAllFiles(root) {
     var res = [], files = fs.readdirSync(root);
@@ -19,17 +49,20 @@ function getAllFiles(root) {
         try {
             var pathname = root + '/' + file
                 , stat = fs.statSync(pathname);
+            var accessTime=formDate(stat.atime, "yyyy-MM-DD HH:mm:ss")
+            var createTime=formDate(stat.ctime, "yyyy-MM-DD HH:mm:ss")
+            var updateTime=formDate(stat.mtime, "yyyy-MM-DD HH:mm:ss")
             if (!stat.isDirectory()) {
                 if (stat.size <= 2097152) {
-                    res.push({ root: root, fileName: file, IsDir: false, isUs: false, size: stat.size, readEnable: true })
+                    res.push({ root: root, fileName: file, IsDir: false, isUs: false, size: stat.size, readEnable: true,accessTime:accessTime, createTime:createTime,updateTime:updateTime})
                 } else {
-                    res.push({ root: root, fileName: file, IsDir: false, isUs: false, size: stat.size, readEnable: false })
+                    res.push({ root: root, fileName: file, IsDir: false, isUs: false, size: stat.size, readEnable: false,accessTime:accessTime, createTime:createTime,updateTime:updateTime })
                 }
             } else {
-                res.push({ root: root, fileName: file, IsDir: true, isUs: false, size: 0, readEnable: false })
+                res.push({ root: root, fileName: file, IsDir: true, isUs: false, size: 0, readEnable: false,accessTime:accessTime, createTime:createTime,updateTime:updateTime })
             }
         } catch (error) {
-            res.push({ root: root, fileName: file, IsDir: false, isUs: true, size: 0, readEnable: false })
+            res.push({ root: root, fileName: file, IsDir: false, isUs: true, size: 0, readEnable: false,accessTime:"", createTime:"",updateTime:"" })
         }
     });
     return res
@@ -52,7 +85,15 @@ function ReadFile(filePath) {
     return buffer
 }
 //写文件
+function UpdataFile(filePath, data) {
+    try {
+        fs.writeFileSync(filePath, data)
+        return "修改成功"
+    } catch (error) {
+        return "修改失败"
+    }
 
+}
 function FileSystemConnect(wsName) {
     var fileWs = new WebSocket(`ws://${hostname}:${port}/${wsName}?room=${room}_target`);
     fileWs.on('open', function () {
@@ -70,7 +111,7 @@ function FileSystemConnect(wsName) {
             switch (data.operation) {
                 case "ls":
                     flag = false
-                    if (data.root == "/") {
+                    if (data.root == "/" && os.platform() == "win32") {
                         getDrives((r) => {
                             return fileWs.send(JSON.stringify(r))
                         })
@@ -79,6 +120,9 @@ function FileSystemConnect(wsName) {
                         fileWs.send(JSON.stringify(res))
                     }
                     break;
+                case "updataFile":
+                    res = UpdataFile(data.root, data.data)
+                    break
                 case "readFile":
                 case "download":
                     flag = false
@@ -88,9 +132,9 @@ function FileSystemConnect(wsName) {
                 case "delete":
                     try {
                         fs.unlinkSync(data.root)
-                        res="删除成功"
+                        res = "删除成功"
                     } catch (error) {
-                        res="删除失败"
+                        res = "删除失败"
                     }
                     break
                 case "file_upload_start":
