@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "better-sqlite3": "^7.6.2",
     "diskinfo": "^0.0.3",
     "ffi-napi": "^4.0.3",
     "nexe": "^4.0.0-rc.1",
