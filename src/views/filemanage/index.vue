@@ -2,20 +2,46 @@
   <div v-loading.fullscreen.lock="fileContentLoading || fileDownloadLoading">
     <el-card class="box-card" style="min-height: 78vh">
       <div slot="header" class="clearfix">
-        <span>文件管理</span>
-
-        <el-button
-          style="float: right; padding: 3px 0"
-          type="text"
-          @click="(showUpdateFormVisible = true), (file = '')"
-          >上传</el-button
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          "
         >
-        <el-button
-          style="float: right; padding: 3px 0; margin-right: 20px"
-          type="text"
-          @click="loadData, $message.success('刷新成功')"
-          >刷新数据
-        </el-button>
+          <div>
+            <span>文件管理</span>
+            <div style="margin-top: 10px">
+              <el-input
+                v-model="currentPath"
+                auto-complete="off"
+                style="width: 400px"
+                :placeholder="currentPath"
+                @click.stop.native=""
+              >
+                <el-button
+                  slot="append"
+                  icon="el-icon-position"
+                  @click="ChangePath"
+                ></el-button>
+              </el-input>
+            </div>
+          </div>
+          <div>
+            <el-button
+              style="padding: 3px 0"
+              type="text"
+              @click="(showUpdateFormVisible = true), (file = '')"
+              >上传</el-button
+            >
+            <el-button
+              style="padding: 3px 0; margin-right: 20px"
+              type="text"
+              @click="loadData, $message.success('刷新成功')"
+              >刷新数据
+            </el-button>
+          </div>
+        </div>
       </div>
       <div>
         <el-button
@@ -43,54 +69,89 @@
             style="width: 2em; object-fit: contain; margin-right: 10px"
         /></el-button>
       </div>
-      <div ref="fileManage" style="max-height: 60vh; overflow: auto">
-        <div v-if="tableData.length == 0">空</div>
-        <div v-for="item in tableData" :key="item.room" class="text item">
-          <el-card shadow="hover" style="margin-top: 10px; cursor: pointer">
-            <div
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-              "
-              @click="fileOperations(item)"
-            >
+      <div ref="fileManage" style="height: 55vh; overflow: auto">
+        <el-table
+          :data="tableData"
+          height="55vh"
+          @row-click="fileOperations"
+          @header-click="sortData"
+        >
+          <el-table-column label="名称" prop="fileName">
+            <template slot-scope="scope">
               <div style="display: flex; align-items: center">
                 <img
-                  :src="item.IsDir ? folderIcon : fileIcon"
+                  :src="scope.row.IsDir ? folderIcon : fileIcon"
                   alt=""
                   srcset=""
                   style="width: 2.5em; object-fit: contain; margin-right: 10px"
                 />
                 <div>
-                  {{ item.fileName }}
-                  <div v-if="!item.IsDir">{{ item.size }}</div>
+                  {{ scope.row.fileName }}
                 </div>
               </div>
-              <div v-if="!item.IsDir">
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="最近使用时间"
+            width="180"
+            align="center"
+            prop="accessTime"
+          >
+            <template slot-scope="scope">
+              {{ scope.row.accessTime }}
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="创建时间"
+            width="180"
+            align="center"
+            prop="createTime"
+          >
+            <template slot-scope="scope">
+              {{ scope.row.createTime }}
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="修改时间"
+            width="180"
+            align="center"
+            prop="updateTime"
+          >
+            <template slot-scope="scope">
+              {{ scope.row.updateTime }}
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="文件大小"
+            width="180"
+            align="center"
+            prop="size"
+          >
+            <template slot-scope="scope">
+              {{ !scope.row.IsDir ? scope.row.size : "" }}
+            </template>
+          </el-table-column>
+          <el-table-column label="" width="100px">
+            <template slot-scope="scope">
+              <div v-if="!scope.row.IsDir">
                 <el-button
-                  style="
-                    float: right;
-                    padding: 3px 0;
-                    color: red;
-                    margin-left: 20px;
-                  "
+                  style="padding: 3px 0"
                   type="text"
-                  :disabled="item.isUs"
-                  @click.stop.native="deleteFile(item)"
-                  >删除</el-button
-                >
-                <el-button
-                  style="float: right; padding: 3px 0"
-                  type="text"
-                  :disabled="item.isUs"
-                  @click.stop.native="downloadFile(item)"
+                  :disabled="scope.row.isUs"
+                  @click.stop.native="downloadFile(scope.row)"
                   >下载</el-button
                 >
+                <el-button
+                  style="padding: 3px 0; color: red; margin-left: 20px"
+                  type="text"
+                  :disabled="scope.row.isUs"
+                  @click.stop.native="deleteFile(scope.row)"
+                  >删除</el-button
+                >
               </div>
-            </div>
-          </el-card>
-        </div>
+            </template>
+          </el-table-column>
+        </el-table>
       </div>
     </el-card>
     <el-dialog
@@ -102,7 +163,7 @@
         v-if="dialogVisible"
         style="
           white-space: pre-wrap;
-          height: 500px;
+          height: 60vh;
           overflow: auto;
           background: #f5f5f5;
           border: 1px solid #eee;
@@ -110,7 +171,18 @@
           border-radius: 10px;
         "
       >
-        {{ this.fileContent }}
+        <el-input
+          type="textarea"
+          autosize
+          placeholder="请输入内容"
+          v-model="fileContent"
+        >
+        </el-input>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="uploadFileContent"
+          >修改文件</el-button
+        >
       </div>
     </el-dialog>
     <el-dialog
@@ -158,6 +230,8 @@ export default {
       leftIcon: require("@/assets/arrow-left.png"),
       rightIcon: require("@/assets/arrow-right.png"),
       tableData: [],
+      fileList: [],
+      folderList: [],
       SendData: {
         root: "/",
         operation: "ls",
@@ -177,6 +251,9 @@ export default {
       fileDownloadLoading: false,
       file: "",
       showUploadList: true,
+      currentItem: "",
+      sortingWay: "fileName",
+      sortingWay2: "folder",
     };
   },
   created() {
@@ -199,6 +276,12 @@ export default {
       }
       this.backwardPath.push(this.oldPath);
       this.oldPath = this.currentPath;
+      this.SendData = {
+        root: this.currentPath,
+        operation: "ls",
+        data: "",
+      };
+      this.socket.send(JSON.stringify(this.SendData));
     },
     // 后退
     backwardMenu() {
@@ -260,6 +343,7 @@ export default {
         if (!item.readEnable) {
           return this.$message.warning("文件太大无法读取!!!");
         }
+        this.currentItem = item;
         this.fileContentLoading = true;
         this.socket.send(JSON.stringify(this.SendData));
       }
@@ -290,6 +374,25 @@ export default {
       this.fileDownloadLoading = true;
       this.socket.send(JSON.stringify(this.SendData));
     },
+    //修改文件内容
+    uploadFileContent() {
+      this.SendData = {
+        root: this.currentItem.root + this.currentItem.fileName,
+        operation: "updataFile",
+        data: this.fileContent,
+      };
+      this.socket.send(JSON.stringify(this.SendData));
+      this.dialogVisible = false;
+    },
+    //排序
+    sortData(col) {
+      if (col.property == this.sortingWay) {
+        this.sortingWay2 = this.sortingWay2 == "folder" ? "file" : "folder";
+      } else {
+        this.sortingWay = col.property;
+      }
+      this.loadData();
+    },
     initSocket() {
       this.socket = new WebSocket(this.socketURI);
       this.socketOnOpen();
@@ -297,6 +400,7 @@ export default {
       this.socketOnError();
       this.socketOnClose();
     },
+
     /**
      * 文件上传
      */
@@ -425,12 +529,59 @@ export default {
                     fileList.push(f);
                   }
                 }
-                var tableData = folderList.concat(...fileList);
+                switch (this.sortingWay) {
+                  case "fileName":
+                    folderList.sort(function (p1, p2) {
+                      return p1.fileName.localeCompare(p2.fileName, "zh-CN"); //正序
+                    });
+                    fileList.sort(function (p1, p2) {
+                      return p1.fileName.localeCompare(p2.fileName, "zh-CN"); //正序
+                    });
+                    break;
+                  case "accessTime":
+                    folderList.sort(function (p1, p2) {
+                      return p2.accessTime.localeCompare(p1.accessTime, "zh-CN"); //正序
+                    });
+                    fileList.sort(function (p1, p2) {
+                      return p2.accessTime.localeCompare(p1.accessTime, "zh-CN"); //正序
+                    });
+                    break;
+                  case "createTime":
+                    folderList.sort(function (p1, p2) {
+                      return p2.createTime.localeCompare(p1.createTime, "zh-CN"); //正序
+                    });
+                    fileList.sort(function (p1, p2) {
+                      return p2.createTime.localeCompare(p1.createTime, "zh-CN"); //正序
+                    });
+                    break;
+                  case "updateTime":
+                    folderList.sort(function (p1, p2) {
+                      return p2.updateTime.localeCompare(p1.updateTime, "zh-CN"); //正序
+                    });
+                    fileList.sort(function (p1, p2) {
+                      return p2.updateTime.localeCompare(p1.updateTime, "zh-CN"); //正序
+                    });
+                    break;
+                  case "size":
+                    folderList.sort(function (a, b) {
+                      return a.size - b.size; //正序
+                    });
+                    fileList.sort(function (a, b) {
+                      return a.size - b.size; //正序
+                    });
+                    break;
+                  default:
+                    break;
+                }
+                var tableData;
+                if (this.sortingWay2 == "folder") {
+                  tableData = folderList.concat(...fileList);
+                } else {
+                  tableData = fileList.concat(...folderList);
+                }
                 this.tableData = tableData;
               } catch (err) {
-                if (this.SendData.operation == "delete") {
-                  this.loadData();
-                }
+                this.loadData();
                 this.$message.info(result);
               }
             };
@@ -458,6 +609,12 @@ export default {
 }
 ::v-deep .el-input__inner {
   border-radius: 0px;
+}
+::v-deep .el-table th>.cell {
+   cursor: pointer;
+}
+::v-deep  .el-table tr{
+   cursor: pointer;
 }
 .demo-table-expand {
   font-size: 0;

@@ -1,16 +1,32 @@
 <template>
   <div>
-    <el-card class="box-card" style="min-height: 80vh">
+    <el-card class="box-card" style="height: 80vh;overflow:auto">
       <div slot="header" class="clearfix">
         <span>目标机器在线列表</span>
         <el-button
           style="float: right; padding: 3px 0"
           type="text"
-          @click="loadData, $message.success('刷新成功')"
+          @click="loadData(), $message.success('刷新成功')"
           >刷新数据</el-button
         >
       </div>
-      <div v-if="tableData.length == 0">空</div>
+      <div v-if="tableData.length == 0">
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 60vh;
+            flex-direction: column;
+          "
+        >
+          <img
+            src="http://cdn.uviewui.com/uview/empty/data.png"
+            style="width: 200px; object-fit: contain"
+          />
+          <div>暂无目标机器在线</div>
+        </div>
+      </div>
       <div v-for="item in tableData" :key="item.room" class="text item">
         <el-card shadow="hover" style="margin-top: 10px; cursor: pointer">
           <div
@@ -21,7 +37,13 @@
             "
             @click="rowClick(item)"
           >
-            <div>
+            <div style="display: flex; align-items: center">
+              <img
+                :src="IconList[item.os]"
+                alt=""
+                srcset=""
+                style="width: 2em; object-fit: contain; margin-right: 10px"
+              />
               {{ item.room }}
             </div>
             <div>
@@ -59,6 +81,11 @@ export default {
       tableData: [],
       ipaddr: "",
       path: "",
+      IconList: {
+        win32: require("@/assets/windows.png"),
+        darwin: require("@/assets/mac.png"),
+        linux: require("@/assets/linux.png"),
+      },
     };
   },
   created() {
@@ -108,6 +135,9 @@ export default {
       });
     },
     rowClick(row) {
+      if (this.path == "screen" && row.os == "linux") {
+        return this.$message.warning("目前不支持linux");
+      }
       this.$router.push({
         path: this.path,
         query: { roomID: row.room, username: row.room },

@@ -4,7 +4,7 @@
  * @Autor: solid
  * @Date: 2022-10-25 18:43:28
  * @LastEditors: solid
- * @LastEditTime: 2022-11-04 11:58:31
+ * @LastEditTime: 2022-11-09 14:14:00
 -->
 <template>
   <div class="menu">
@@ -46,6 +46,11 @@ export default {
           name: "文件管理",
           icon: require("@/assets/fileManage.png"),
           key: "file",
+        },
+        {
+          name: "浏览器",
+          icon: require("@/assets/browser.png"),
+          key: "browser",
         },
       ],
     };
