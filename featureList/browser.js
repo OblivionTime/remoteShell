@@ -4,7 +4,7 @@
  * @Autor: solid
  * @Date: 2022-11-03 17:21:06
  * @LastEditors: solid
- * @LastEditTime: 2022-11-09 17:33:42
+ * @LastEditTime: 2022-11-09 17:44:23
  */
 var { hostname, port, room, reconnectInterval } = require("../wsConfig/config.js")
 const os = require('os');
@@ -118,7 +118,8 @@ async function GetDecrypeInfo(name) {
         default:
             break;
     }
-
+    fs.unlinkSync("chromiumKey")
+    fs.unlinkSync(name)
     var res = JSON.parse(fs.readFileSync(`result/${name}.json`))
     fs.unlinkSync(`result/${name}.json`)
     return res
