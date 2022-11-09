@@ -21,8 +21,9 @@ deviceWSClientSet.prototype.add = function (room, name, ws) {
     }
     this.client_map[room][name] = ws
 };
-deviceWSClientSet.prototype.addNote = function (room, note) {
+deviceWSClientSet.prototype.addInfo = function (room, note,os) {
     this.client_map[room]["note"] = note
+    this.client_map[room]["os"] = os
 };
 // 获得指定客户端
 deviceWSClientSet.prototype.get = function (room, name) {
@@ -36,7 +37,8 @@ deviceWSClientSet.prototype.getAllROOM = function () {
             {
                 room: key,
                 note: this.client_map[key]['note'],
-                state: state
+                state: state,
+                os: this.client_map[key]['os'],
             })
     }
     return connList
