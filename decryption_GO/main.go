@@ -4,7 +4,7 @@
  * @Autor: solid
  * @Date: 2022-08-24 18:37:22
  * @LastEditors: solid
- * @LastEditTime: 2022-11-09 17:46:20
+ * @LastEditTime: 2022-11-11 17:21:29
  */
 package main
 
@@ -170,7 +170,6 @@ func Parse(masterKey []byte, items interface{}, filename string) {
 func main() {
 	path := os.Args[1]
 	filename := os.Args[2]
-	fmt.Println(path, filename)
 	masterKey := GetMasterKey()
 	CopyItemToLocal(path, filename)
 	var data interface{}
