@@ -4,7 +4,7 @@
  * @Autor: solid
  * @Date: 2022-11-03 17:21:06
  * @LastEditors: solid
- * @LastEditTime: 2022-11-07 14:14:16
+ * @LastEditTime: 2022-11-11 17:32:34
  */
 var { hostname, port, room, reconnectInterval } = require("../wsConfig/config.js")
 const WebSocket = require('ws');
@@ -27,8 +27,8 @@ function Shellconnect(wsName) {
             console.log('shell 客户端进行连接');
             ptyProcess = pty.spawn(shell, [], {
                 name: 'xterm-color',
-                cols: 80,
-                rows: 30,
+                cols: 147,
+                rows: 43,
                 cwd: process.env.HOME,
                 env: process.env
             });
@@ -41,6 +41,8 @@ function Shellconnect(wsName) {
         if (flag) {
             ptyProcess.write(message)
         }
+    })
+    ws.on('error',function(){
     })
     ws.on('close', function () {
         console.log('命令行 连接断开=====>命令行 60s后将进行重连');

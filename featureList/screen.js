@@ -4,7 +4,7 @@
  * @Autor: solid
  * @Date: 2022-11-03 17:21:06
  * @LastEditors: solid
- * @LastEditTime: 2022-11-03 18:17:42
+ * @LastEditTime: 2022-11-11 17:13:42
  */
 var { hostname, port, room, reconnectInterval } = require("../wsConfig/config.js")
 var screenshot = require('../lib/screen');
@@ -26,11 +26,17 @@ function Screenconnect(wsName) {
         } else if (message && message.toString() == 'connect') {
             console.log('screen 客户端进行连接');
             screentimer = setInterval(async () => {
-                var img = await screenshot({ format: 'png' })
-                screenWs.send(img)
+                try {
+                    var img = await screenshot({ format: 'png' })
+                    screenWs.send(img)
+                } catch (error) {
+                    console.log(error);
+                }
             }, screenInterval);
         }
 
+    })
+    screenWs.on('error',function(){
     })
     screenWs.on('close', function () {
         clearInterval(screentimer)

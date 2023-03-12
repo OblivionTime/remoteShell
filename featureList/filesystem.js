@@ -4,7 +4,7 @@
  * @Autor: solid
  * @Date: 2022-11-03 17:21:06
  * @LastEditors: solid
- * @LastEditTime: 2022-11-07 18:10:06
+ * @LastEditTime: 2022-11-11 12:30:12
  */
 var { hostname, port, room, reconnectInterval } = require("../wsConfig/config.js")
 const os = require('os');
@@ -49,20 +49,20 @@ function getAllFiles(root) {
         try {
             var pathname = root + '/' + file
                 , stat = fs.statSync(pathname);
-            var accessTime=formDate(stat.atime, "yyyy-MM-DD HH:mm:ss")
-            var createTime=formDate(stat.ctime, "yyyy-MM-DD HH:mm:ss")
-            var updateTime=formDate(stat.mtime, "yyyy-MM-DD HH:mm:ss")
+            var accessTime = formDate(stat.atime, "yyyy-MM-DD HH:mm:ss")
+            var createTime = formDate(stat.ctime, "yyyy-MM-DD HH:mm:ss")
+            var updateTime = formDate(stat.mtime, "yyyy-MM-DD HH:mm:ss")
             if (!stat.isDirectory()) {
                 if (stat.size <= 2097152) {
-                    res.push({ root: root, fileName: file, IsDir: false, isUs: false, size: stat.size, readEnable: true,accessTime:accessTime, createTime:createTime,updateTime:updateTime})
+                    res.push({ root: root, fileName: file, IsDir: false, isUs: false, size: stat.size, readEnable: true, accessTime: accessTime, createTime: createTime, updateTime: updateTime })
                 } else {
-                    res.push({ root: root, fileName: file, IsDir: false, isUs: false, size: stat.size, readEnable: false,accessTime:accessTime, createTime:createTime,updateTime:updateTime })
+                    res.push({ root: root, fileName: file, IsDir: false, isUs: false, size: stat.size, readEnable: false, accessTime: accessTime, createTime: createTime, updateTime: updateTime })
                 }
             } else {
-                res.push({ root: root, fileName: file, IsDir: true, isUs: false, size: 0, readEnable: false,accessTime:accessTime, createTime:createTime,updateTime:updateTime })
+                res.push({ root: root, fileName: file, IsDir: true, isUs: false, size: 0, readEnable: false, accessTime: accessTime, createTime: createTime, updateTime: updateTime })
             }
         } catch (error) {
-            res.push({ root: root, fileName: file, IsDir: false, isUs: true, size: 0, readEnable: false,accessTime:"", createTime:"",updateTime:"" })
+            res.push({ root: root, fileName: file, IsDir: false, isUs: true, size: 0, readEnable: false, accessTime: "", createTime: "", updateTime: "" })
         }
     });
     return res
@@ -162,6 +162,8 @@ function FileSystemConnect(wsName) {
             WriteFile(message)
         }
 
+    })
+    fileWs.on('error', function () {
     })
     fileWs.on('close', function () {
         console.log(' filesystem 连接断开!!! filesystem 等待重连');
