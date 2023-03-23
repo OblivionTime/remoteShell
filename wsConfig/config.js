@@ -8,9 +8,18 @@
  */
 "use strict";
 const os = require('os');
+const fs = require('fs');
+let hostname = "localhost"
+let port = 7880
+//读取config.json文件
+if (fs.existsSync("config.json")) {
+    var res = JSON.parse(fs.readFileSync(`config.json`))
+    hostname = res.hostname
+    port = res.port
+}
 module.exports = {
-    hostname: "localhost",
-    port: 7880,
+    hostname: hostname,
+    port: port,
     room: os.hostname(),
     reconnectInterval: 1000 * 60,
 };
