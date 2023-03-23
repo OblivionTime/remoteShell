@@ -39,6 +39,7 @@ function Shellconnect(wsName) {
             return
         }
         if (flag) {
+            console.log("message",message.toString().charCodeAt());
             ptyProcess.write(message)
         }
     })

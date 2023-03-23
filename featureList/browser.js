@@ -104,7 +104,7 @@ async function generateJson(filename, filePath) {
     }
     fs.writeFileSync("chromiumKey", fs.readFileSync(getchromiumKeyPath));
     try {
-        await exec(`decryption.exe  "${filePath}" "${filename}"`)
+        await exec(`static\\decryption.exe  "${filePath}" "${filename}"`)
         return false
     } catch (error) {
         return true
@@ -124,6 +124,7 @@ async function GetDecrypeInfo(name) {
         default:
             break;
     }
+   
     fs.unlinkSync("chromiumKey")
     fs.unlinkSync(name)
     if (!err) {

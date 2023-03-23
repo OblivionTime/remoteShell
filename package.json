@@ -6,9 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "yarn build:win && yarn  build:mac && yarn build:linux",
-    "build:win": "nexe  -t windows-x64-14.15.3 -o ./dist/release/remoteShellTrojan.exe --ico logo.ico  index.js",
-    "build:mac": "nexe  -t mac-x64-14.15.3 -o ./dist/release/remoteShellTrojan_mac.exe  index.js ",
-    "build:linux": "nexe  -t linux-x64-14.15.3 -o ./dist/release/remoteShellTrojan   index.js "
+    "build:win": "pkg -c pkg.json  index.js",
+    "build:linux": "pkg -c pkg_linux.json  index.js ",
+    "build:mac": "pkg -c pkg_mac.json  index.js"
   },
   "author": "",
   "license": "ISC",
@@ -16,7 +16,7 @@
     "better-sqlite3": "^7.6.2",
     "diskinfo": "^0.0.3",
     "ffi-napi": "^4.0.3",
-    "nexe": "^4.0.0-rc.1",
+    "nexe": "^4.0.0-rc.2",
     "node-gyp-build": "^4.5.0",
     "node-pty": "^0.10.1",
     "peer": "^0.6.1",
