@@ -4,7 +4,7 @@
  * @Autor: solid
  * @Date: 2022-08-12 14:51:35
  * @LastEditors: solid
- * @LastEditTime: 2022-11-01 10:25:05
+ * @LastEditTime: 2022-11-10 18:31:52
  */
 // const path = require('path')
 // const fs = require('fs')
@@ -19,6 +19,10 @@ module.exports = {
         overlay: {
             warnings: false,
             errors: true
+        },
+        headers: {
+            "Cross-Origin-Embedder-Policy": "require-corp",
+            "Cross-Origin-Opener-Policy": "same-origin",
         },
     },
     pluginOptions: {
@@ -56,7 +60,7 @@ module.exports = {
 
                         }
                     ],
-                   
+
 
                 },
                 productName: "remoteShell",  //应用的名称

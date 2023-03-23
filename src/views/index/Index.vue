@@ -1,14 +1,23 @@
 <template>
   <div>
-    <el-card class="box-card" style="height: 80vh;overflow:auto">
+    <el-card class="box-card" style="height: 80vh; overflow: auto">
       <div slot="header" class="clearfix">
-        <span>目标机器在线列表</span>
-        <el-button
-          style="float: right; padding: 3px 0"
-          type="text"
-          @click="loadData(), $message.success('刷新成功')"
-          >刷新数据</el-button
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          "
         >
+          <span>目标机器在线列表</span>
+
+          <el-button
+            style="float: right; padding: 3px 0"
+            type="text"
+            @click="loadData(), $message.success('刷新成功')"
+            >刷新数据</el-button
+          >
+        </div>
       </div>
       <div v-if="tableData.length == 0">
         <div
@@ -21,7 +30,7 @@
           "
         >
           <img
-            src="http://cdn.uviewui.com/uview/empty/data.png"
+            src="../../assets/empty.png"
             style="width: 200px; object-fit: contain"
           />
           <div>暂无目标机器在线</div>
@@ -86,6 +95,17 @@ export default {
         darwin: require("@/assets/mac.png"),
         linux: require("@/assets/linux.png"),
       },
+      current_time: "00:00",
+      total_time: "10:00",
+      recordScreenFlag: false,
+      recordScreenPause: true,
+      timer: "",
+      minute: 0,
+      ms: 0,
+      second: 0, //秒
+      percentage: 0,
+      count: 0,
+      stopIcon: require("@/assets/stop.png"),
     };
   },
   created() {
@@ -140,7 +160,11 @@ export default {
       }
       this.$router.push({
         path: this.path,
-        query: { roomID: row.room, username: row.room },
+        query: {
+          roomID: row.room,
+          username: row.room,
+          outputFileType: this.path,
+        },
       });
     },
     /**
@@ -169,6 +193,47 @@ export default {
         window.location.reload();
       }, 1500);
     },
+
+    timeStart() {
+      this.recordScreenFlag = true;
+      this.timer = setInterval(this.recordScreen, 1000);
+    },
+    ToggleStatus() {
+      if (this.recordScreenPause) {
+        clearInterval(this.timer);
+      } else {
+        this.timer = setInterval(this.recordScreen, 1000);
+      }
+      this.recordScreenPause = !this.recordScreenPause;
+    },
+    stopRecordScreen() {
+      clearInterval(this.timer);
+      this.current_time = "00:00";
+      this.recordScreenPause = false;
+      this.recordScreenFlag = false;
+    },
+    recordScreen() {
+      this.count += 1;
+      this.percentage = Math.floor((this.count / 600) * 100);
+      this.second = this.second + 1; //秒
+      if (this.second >= 60) {
+        this.second = 0;
+        this.minute = this.minute + 1; //分钟
+      }
+      this.current_time =
+        this.toDub(this.minute) + ":" + this.toDub(this.second);
+    },
+    toDub(n) {
+      //补0操作
+      if (n < 10) {
+        return "0" + n;
+      } else {
+        return "" + n;
+      }
+    },
+  },
+  destroyed() {
+    clearInterval(this.timer);
   },
 };
 </script>

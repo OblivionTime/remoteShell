@@ -55,6 +55,11 @@ export default {
       ],
     };
   },
+  created() {
+    if (this.$route.query.outputFileType) {
+      this.outputFileType = this.$route.query.outputFileType;
+    }
+  },
   methods: {
     ChangeMethod(outputFileType) {
       if (outputFileType == this.outputFileType) {

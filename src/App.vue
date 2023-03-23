@@ -4,7 +4,7 @@
  * @Autor: solid
  * @Date: 2022-11-01 10:02:32
  * @LastEditors: solid
- * @LastEditTime: 2022-11-04 18:52:02
+ * @LastEditTime: 2022-11-10 15:09:03
 -->
 <template>
   <div id="app">
@@ -34,7 +34,7 @@
         </div>
       </div>
       <el-card class="box-card" style="width: 100%; margin-top: 20px">
-        <div style="display: flex; width: 100%; min-height: 80vh">
+        <div style="display: flex; width: 100%;">
           <Menu @ChangeMethod="ChangeMethod"></Menu>
           <div class="main" ref="main">
             <router-view :key="$route.fullPath" />

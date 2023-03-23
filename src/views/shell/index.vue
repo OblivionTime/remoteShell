@@ -4,7 +4,7 @@
  * @Autor: solid
  * @Date: 2022-10-31 10:01:01
  * @LastEditors: solid
- * @LastEditTime: 2022-11-03 16:00:42
+ * @LastEditTime: 2022-11-11 17:27:53
 -->
 <template>
   <div>
@@ -52,6 +52,7 @@ export default {
     windowHeight(val) {
       var rows = Math.floor(this.windowHeight / 23);
       var cols = Math.floor(this.windowWidth / 13);
+      console.log(rows, cols);
       this.term.resize(cols, rows);
     },
     windowWidth(val) {
